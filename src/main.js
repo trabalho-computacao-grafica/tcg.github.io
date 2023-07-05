@@ -494,49 +494,96 @@ function updateLightPosition(x, y, z) {
   target.position.set(dirLight.position.x + 10, 0, dirLight.position.z + 10);
 }
 
+// function keyboardUpdate() {
+//   keyboard.update();
+//   if (keyboard.pressed("D")) {
+//     updateLightPosition(
+//       lightPosition.x + 0.5,
+//       lightPosition.y,
+//       lightPosition.z
+//     );
+//   }
+//   if (keyboard.pressed("A")) {
+//     updateLightPosition(
+//       lightPosition.x - 0.5,
+//       lightPosition.y,
+//       lightPosition.z
+//     );
+//   }
+//   if (keyboard.pressed("W")) {
+//     updateLightPosition(
+//       lightPosition.x,
+//       lightPosition.y + 0.5,
+//       lightPosition.z
+//     );
+//   }
+//   if (keyboard.pressed("S")) {
+//     updateLightPosition(
+//       lightPosition.x,
+//       lightPosition.y - 0.5,
+//       lightPosition.z
+//     );
+//   }
+//   if (keyboard.pressed("E")) {
+//     updateLightPosition(
+//       lightPosition.x,
+//       lightPosition.y,
+//       lightPosition.z - 0.5
+//     );
+//   }
+//   if (keyboard.pressed("Q")) {
+//     updateLightPosition(
+//       lightPosition.x,
+//       lightPosition.y,
+//       lightPosition.z + 0.5
+//     );
+//   }
+// }
+
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+// create a global audio source
+const sound = new THREE.Audio(listener);
+
+// load a sound and set it as the Audio object's buffer
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load("./static/strong-and-strike.mp3", function (buffer) {
+  sound.setBuffer(buffer);
+  sound.setLoop(true);
+  sound.setVolume(0.5);
+  sound.play();
+});
+
+function toggleSound() {
+  if (!sound) {
+    return;
+  }
+
+  if (sound.isPlaying) {
+    sound.pause();
+    return;
+  }
+
+  sound.play();
+}
+
+const previousToggleMapper = {};
+
+function keyDebounce(key, callback, value) {
+  const currentToggle = new Date().getTime();
+  const diff = currentToggle - (previousToggleMapper[key] || 0);
+  if (previousToggleMapper[key] === undefined || diff > value) {
+    callback();
+  }
+  previousToggleMapper[key] = currentToggle;
+}
+
 function keyboardUpdate() {
   keyboard.update();
-  if (keyboard.pressed("D")) {
-    updateLightPosition(
-      lightPosition.x + 0.5,
-      lightPosition.y,
-      lightPosition.z
-    );
-  }
-  if (keyboard.pressed("A")) {
-    updateLightPosition(
-      lightPosition.x - 0.5,
-      lightPosition.y,
-      lightPosition.z
-    );
-  }
-  if (keyboard.pressed("W")) {
-    updateLightPosition(
-      lightPosition.x,
-      lightPosition.y + 0.5,
-      lightPosition.z
-    );
-  }
+
   if (keyboard.pressed("S")) {
-    updateLightPosition(
-      lightPosition.x,
-      lightPosition.y - 0.5,
-      lightPosition.z
-    );
-  }
-  if (keyboard.pressed("E")) {
-    updateLightPosition(
-      lightPosition.x,
-      lightPosition.y,
-      lightPosition.z - 0.5
-    );
-  }
-  if (keyboard.pressed("Q")) {
-    updateLightPosition(
-      lightPosition.x,
-      lightPosition.y,
-      lightPosition.z + 0.5
-    );
+    keyDebounce("S", toggleSound, 100);
   }
 }
 
