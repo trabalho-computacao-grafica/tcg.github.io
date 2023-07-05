@@ -173,18 +173,18 @@ let asset = {
   bb: new THREE.Box3(),
 };
 
-//loadGLBFile(asset, "../static/f16.obj", 7.0);
+//loadGLBFile(asset, "./static/f16.obj", 7.0);
 
 // instantiate a loader
 const loader = new OBJLoader();
 const mtlLoader = new MTLLoader();
 mtlLoader.load(
-  "../static/f16.mtl",
+  "./static/f16.mtl",
   (materials) => {
     materials.preload();
     loader.setMaterials(materials);
     loader.load(
-      "../static/f16.obj",
+      "./static/f16.obj",
       function (object) {
         let obj = object;
         obj = fixPosition(obj);
@@ -197,6 +197,8 @@ mtlLoader.load(
         console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
       },
       function (error) {
+        console.error("ERROR -> ", error);
+
         console.log("An error happened");
       }
     );
@@ -290,14 +292,6 @@ const blocker = document.getElementById("blocker");
 const instructions = document.getElementById("instructions");
 const body = document.getElementById("bodyId");
 
-window.addEventListener("click", (event) => {
-  start = true;
-  instructions.style.display = "none";
-  blocker.style.display = "none";
-  body.style.cursor = "none";
-  tiroAviao();
-});
-
 window.addEventListener("keydown", (event) => {
   if (event.key == "Escape") {
     start = false;
@@ -335,6 +329,10 @@ function mouseRotation() {
 }
 
 function tiroAviao() {
+  if (asset.object == null) {
+    return;
+  }
+
   let cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
   let cube = new THREE.Mesh(cubeGeometry, material);
   cube.position.set(
@@ -376,6 +374,14 @@ function tiroAviao() {
     },
   });
 }
+
+window.addEventListener("click", (event) => {
+  start = true;
+  instructions.style.display = "none";
+  blocker.style.display = "none";
+  body.style.cursor = "none";
+  tiroAviao();
+});
 
 function updateTiro() {
   for (let i = 0; i < arrayTiro.length; i++) {
